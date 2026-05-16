@@ -1,7 +1,14 @@
 import axios from 'axios';
 import { toast } from 'sonner';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+const getBaseUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (!envUrl) return 'http://localhost:8000/api/v1';
+  if (envUrl.endsWith('/api/v1')) return envUrl;
+  return `${envUrl.replace(/\/$/, '')}/api/v1`;
+};
+
+const API_URL = getBaseUrl();
 
 const apiClient = axios.create({
   baseURL: API_URL,
