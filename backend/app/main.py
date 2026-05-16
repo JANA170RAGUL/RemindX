@@ -13,11 +13,19 @@ import logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 
 import os
+from app.core.database import engine, Base
+from app.models import *
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup logic
     logging.info("Starting RemindX Backend...")
+    try:
+        Base.metadata.create_all(bind=engine)
+        logging.info("Database tables auto-created successfully E.g. ready for production.")
+    except Exception as e:
+        logging.error(f"Failed to auto-create database tables: {str(e)}")
+        
     if os.getenv("RUN_BACKGROUND_WORKER", "true").lower() == "true":
         start_scheduler()
         logging.info("APScheduler automation engine started successfully.")
