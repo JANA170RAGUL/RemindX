@@ -55,7 +55,7 @@ function AppLayout() {
       <div className="h-screen overflow-hidden flex bg-background text-foreground selection:bg-primary/20 selection:text-primary relative">
         <Sidebar />
         <motion.div 
-          animate={{ marginLeft: sidebarCollapsed ? 84 : 280 }}
+          animate={{ marginLeft: sidebarCollapsed ? 120 : 360 }}
           transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
           className="flex-1 h-screen overflow-y-auto flex flex-col min-w-0 pt-5 md:pt-6 lg:pt-8 px-4 md:px-6 lg:px-8"
         >
