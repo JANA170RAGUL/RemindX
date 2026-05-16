@@ -1,10 +1,10 @@
-# app/scheduler/scheduler.py
+# worker/scheduler.py
 from apscheduler.schedulers.background import BackgroundScheduler
-from app.workers.reminder_worker import ReminderWorker
+from worker.reminder_worker import ReminderWorker
 import logging
 import atexit
 
-logger = logging.getLogger("app.scheduler.scheduler")
+logger = logging.getLogger("worker.scheduler")
 
 class AutomationScheduler:
     _scheduler = None
@@ -41,3 +41,9 @@ class AutomationScheduler:
             logger.info("Gracefully shutting down APScheduler Automation Engine...")
             cls._scheduler.shutdown(wait=True)
             logger.info("APScheduler Automation Engine shut down successfully.")
+
+def start_scheduler():
+    AutomationScheduler.start()
+
+def shutdown_scheduler():
+    AutomationScheduler.shutdown()

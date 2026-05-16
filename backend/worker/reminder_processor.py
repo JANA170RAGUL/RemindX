@@ -1,4 +1,4 @@
-# app/scheduler/reminder_processor.py
+# worker/reminder_processor.py
 from sqlalchemy.orm import Session
 from sqlalchemy import asc
 from typing import List, Optional
@@ -11,7 +11,7 @@ from app.notifications.notification_manager import NotificationManager
 import logging
 import asyncio
 
-logger = logging.getLogger("app.scheduler.reminder_processor")
+logger = logging.getLogger("worker.reminder_processor")
 
 class ReminderProcessor:
     def __init__(self, db: Session):

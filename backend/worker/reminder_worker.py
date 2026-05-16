@@ -1,11 +1,11 @@
-# app/workers/reminder_worker.py
+# worker/reminder_worker.py
 from app.core.database import SessionLocal
-from app.scheduler.reminder_processor import ReminderProcessor
+from worker.reminder_processor import ReminderProcessor
 from datetime import datetime
 import logging
 import asyncio
 
-logger = logging.getLogger("app.workers.reminder_worker")
+logger = logging.getLogger("worker.reminder_worker")
 
 class ReminderWorker:
     @staticmethod

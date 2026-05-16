@@ -7,7 +7,7 @@ from app.middleware.logging import RequestLoggingMiddleware
 from app.exceptions.handlers import add_exception_handlers
 from contextlib import asynccontextmanager
 
-from app.scheduler.jobs import start_scheduler, shutdown_scheduler
+from worker.scheduler import start_scheduler, shutdown_scheduler
 import logging
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
