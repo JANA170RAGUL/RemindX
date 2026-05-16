@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 
 const getBaseUrl = () => {
   const envUrl = import.meta.env.VITE_API_URL;
-  if (!envUrl) return 'http://localhost:8000/api/v1';
+  if (!envUrl) return 'https://remindx-production.up.railway.app/api/v1';
   if (envUrl.endsWith('/api/v1')) return envUrl;
   return `${envUrl.replace(/\/$/, '')}/api/v1`;
 };
