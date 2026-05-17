@@ -89,7 +89,8 @@ async def upload_user_avatar(
         buffer.write(await file.read())
 
     # Update user avatar_url
-    avatar_url = f"http://localhost:8000/static/avatars/{unique_filename}"
+    base_url = os.getenv("VITE_API_URL", "https://remindx-production.up.railway.app").rstrip('/')
+    avatar_url = f"{base_url}/static/avatars/{unique_filename}"
     current_user.avatar_url = avatar_url
     db.commit()
     db.refresh(current_user)

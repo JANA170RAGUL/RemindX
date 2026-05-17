@@ -19,12 +19,28 @@ class ReminderProcessor:
         self.notification_manager = NotificationManager(db)
 
     def get_due_reminders(self, now: datetime) -> List[Reminder]:
-        """Fetch pending reminders where reminder_datetime <= current timestamp."""
+        """Fetch pending reminders and filter them by the user's actual local timezone."""
         try:
-            return self.db.query(Reminder).filter(
-                Reminder.status == 'pending',
-                Reminder.reminder_datetime <= now
-            ).order_by(asc(Reminder.reminder_datetime)).all()
+            import zoneinfo
+            pending_reminders = self.db.query(Reminder).filter(Reminder.status == 'pending').all()
+            due_reminders = []
+            
+            for reminder in pending_reminders:
+                user = self.db.query(User).filter(User.id == reminder.user_id).first()
+                tz_name = user.timezone if (user and user.timezone) else "Asia/Kolkata"
+                if " " in tz_name:
+                    tz_name = tz_name.split(" ")[0]
+                
+                try:
+                    user_tz = zoneinfo.ZoneInfo(tz_name)
+                except Exception:
+                    user_tz = zoneinfo.ZoneInfo("Asia/Kolkata")
+                
+                user_now = datetime.now(user_tz).replace(tzinfo=None)
+                if reminder.reminder_datetime <= user_now:
+                    due_reminders.append(reminder)
+                    
+            return due_reminders
         except Exception as e:
             logger.error(f"Database error fetching due reminders: {str(e)}")
             return []
@@ -41,6 +57,17 @@ class ReminderProcessor:
             reminder.completed_at = now
             self.db.commit()
             return False
+
+        # Calculate user's local now
+        tz_name = user.timezone if (user and user.timezone) else "Asia/Kolkata"
+        if " " in tz_name:
+            tz_name = tz_name.split(" ")[0]
+        try:
+            import zoneinfo
+            user_tz = zoneinfo.ZoneInfo(tz_name)
+            user_now = datetime.now(user_tz).replace(tzinfo=None)
+        except Exception:
+            user_now = now
 
         # 2. Find or create ReminderNotification tracking record
         notification = self.db.query(ReminderNotification).filter(
@@ -85,10 +112,10 @@ class ReminderProcessor:
         # 6. Handle Recurrence Engine or One-Time Completion
         try:
             if reminder.repeat_type and reminder.repeat_type.lower() != 'one_time':
-                self._schedule_next_occurrence(reminder, now)
+                self._schedule_next_occurrence(reminder, user_now)
             else:
                 reminder.status = 'completed'
-                reminder.completed_at = now
+                reminder.completed_at = user_now
                 logger.info(f"One-time reminder {reminder.id} marked as COMPLETED.")
             
             self.db.commit()
