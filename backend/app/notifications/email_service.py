@@ -16,9 +16,12 @@ class EmailService:
             return False
             
         def _send():
+            email_clean = settings.EMAIL.replace('"', '').replace("'", "").strip()
+            password_clean = settings.EMAIL_PASSWORD.replace('"', '').replace("'", "").replace(" ", "").strip()
+
             msg = EmailMessage()
             msg['Subject'] = subject
-            msg['From'] = settings.EMAIL.strip()
+            msg['From'] = email_clean
             msg['To'] = to_email
             
             # Set plain text fallback first, then HTML alternative E.g. standard MIME structure
@@ -28,9 +31,6 @@ class EmailService:
             else:
                 msg.set_content(html_content, subtype='html')
 
-            email_clean = settings.EMAIL.replace('"', '').replace("'", "").strip()
-            password_clean = settings.EMAIL_PASSWORD.replace('"', '').replace("'", "").replace(" ", "").strip()
-            msg['From'] = email_clean
 
 
             try:
