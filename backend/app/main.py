@@ -22,7 +22,13 @@ async def lifespan(app: FastAPI):
     logging.info("Starting RemindX Backend...")
     try:
         Base.metadata.create_all(bind=engine)
-        logging.info("Database tables auto-created successfully E.g. ready for production.")
+        from sqlalchemy import text
+        with engine.connect() as conn:
+            conn.execute(text("ALTER TABLE reminder_notifications ADD COLUMN IF NOT EXISTS failure_reason TEXT;"))
+            conn.execute(text("ALTER TABLE reminder_notifications ADD COLUMN IF NOT EXISTS retry_count INTEGER DEFAULT 0;"))
+            conn.execute(text("ALTER TABLE reminder_notifications ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW();"))
+            conn.commit()
+        logging.info("Database tables and schema auto-migrated successfully E.g. ready for production.")
     except Exception as e:
         logging.error(f"Failed to auto-create database tables: {str(e)}")
         

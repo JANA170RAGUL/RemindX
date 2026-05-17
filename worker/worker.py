@@ -13,7 +13,13 @@ def main():
     logger.info("Starting Railway Standalone APScheduler Worker Service...")
     try:
         Base.metadata.create_all(bind=engine)
-        logger.info("Database tables auto-created successfully by Worker Service.")
+        from sqlalchemy import text
+        with engine.connect() as conn:
+            conn.execute(text("ALTER TABLE reminder_notifications ADD COLUMN IF NOT EXISTS failure_reason TEXT;"))
+            conn.execute(text("ALTER TABLE reminder_notifications ADD COLUMN IF NOT EXISTS retry_count INTEGER DEFAULT 0;"))
+            conn.execute(text("ALTER TABLE reminder_notifications ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW();"))
+            conn.commit()
+        logger.info("Database tables and schema auto-migrated successfully by Worker Service.")
     except Exception as e:
         logger.error(f"Failed to auto-create database tables in Worker: {str(e)}")
         
