@@ -33,25 +33,32 @@ class EmailService:
 
 
 
+            import socket
             try:
-                with smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=10) as smtp:
+                smtp_host = socket.gethostbyname('smtp.gmail.com')
+            except Exception:
+                smtp_host = 'smtp.gmail.com'
+
+            try:
+                with smtplib.SMTP_SSL(smtp_host, 465, timeout=10) as smtp:
                     smtp.login(email_clean, password_clean)
                     smtp.send_message(msg)
-                logger.info(f"Successfully dispatched HTML email to {to_email} via SSL (465)")
+                logger.info(f"Successfully dispatched HTML email to {to_email} via SSL (465) on IPv4 ({smtp_host})")
                 return True
             except Exception as e_ssl:
-                logger.warning(f"SMTP SSL (465) failed: {str(e_ssl)}. E.g. attempting STARTTLS (587)...")
+                logger.warning(f"SMTP SSL (465) failed on IPv4 ({smtp_host}): {str(e_ssl)}. E.g. attempting STARTTLS (587)...")
                 try:
-                    with smtplib.SMTP('smtp.gmail.com', 587, timeout=10) as smtp:
+                    with smtplib.SMTP(smtp_host, 587, timeout=10) as smtp:
                         smtp.ehlo()
                         smtp.starttls()
                         smtp.login(email_clean, password_clean)
                         smtp.send_message(msg)
-                    logger.info(f"Successfully dispatched HTML email to {to_email} via STARTTLS (587)")
+                    logger.info(f"Successfully dispatched HTML email to {to_email} via STARTTLS (587) on IPv4 ({smtp_host})")
                     return True
                 except Exception as e_tls:
                     logger.error(f"SMTP STARTTLS (587) dispatch failure for {to_email}: {str(e_tls)}")
                     return False
+
 
         try:
             return await asyncio.to_thread(_send)
