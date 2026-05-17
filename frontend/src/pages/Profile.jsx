@@ -49,7 +49,12 @@ export default function Profile() {
 
           <div className="relative">
             <div className="w-32 h-32 rounded-3xl overflow-hidden ring-4 ring-primary/40 shadow-2xl relative">
-              <img src={user?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&h=200&q=80'} alt={user?.full_name} className="w-full h-full object-cover" />
+              <img 
+                src={user?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&h=200&q=80'} 
+                alt={user?.full_name} 
+                className="w-full h-full object-cover" 
+                onError={(e) => { e.target.onerror = null; e.target.src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&h=200&q=80'; }}
+              />
             </div>
             <span className="absolute -bottom-2 -right-2 px-3 py-1 rounded-full bg-gradient-to-r from-primary to-accent text-white text-[10px] font-extrabold uppercase tracking-wider shadow-lg shadow-primary/30 flex items-center gap-1">
               <Sparkles size={12} /> AI Pro

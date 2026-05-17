@@ -234,6 +234,7 @@ export default function Sidebar() {
                 src={user?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&h=200&q=80'} 
                 alt={user?.full_name} 
                 className="w-10 h-10 rounded-xl object-cover ring-2 ring-[#00e5ff] shadow-[0_0_10px_rgba(0,229,255,0.5)]"
+                onError={(e) => { e.target.onerror = null; e.target.src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&h=200&q=80'; }}
               />
               <span className="absolute -bottom-1 -right-1 w-3 h-3 bg-[#00e5ff] rounded-full ring-2 ring-slate-900 animate-pulse shadow-[0_0_8px_#00e5ff]" />
             </div>

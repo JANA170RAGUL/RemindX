@@ -135,7 +135,12 @@ export default function Header() {
             whileTap={{ scale: 0.95 }}
             className="w-12 h-12 rounded-2xl overflow-hidden ring-2 ring-[#ff4fd8]/50 hover:ring-[#00e5ff] transition-all shadow-[0_0_15px_rgba(236,72,153,0.3)] cursor-pointer"
           >
-            <img src={user?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&h=200&q=80'} alt={user?.full_name} className="w-full h-full object-cover" />
+            <img 
+              src={user?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&h=200&q=80'} 
+              alt={user?.full_name} 
+              className="w-full h-full object-cover" 
+              onError={(e) => { e.target.onerror = null; e.target.src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&h=200&q=80'; }}
+            />
           </motion.div>
         </Link>
       </div>
