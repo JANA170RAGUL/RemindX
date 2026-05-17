@@ -97,7 +97,7 @@ export default function Settings() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-xs font-bold transition-all ${activeTab === tab.id ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-muted-foreground hover:text-foreground hover:bg-white/5'}`}
+                className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-xs font-bold transition-all ${activeTab === tab.id ? 'bg-gradient-to-r from-[#7c3aed] via-[#ff4fd8] to-[#00e5ff] text-white shadow-lg shadow-[#ff4fd8]/30 border border-[#00e5ff]/50' : 'text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5'}`}
               >
                 <Icon size={18} />
                 <span>{tab.label}</span>
