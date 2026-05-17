@@ -28,8 +28,10 @@ class EmailService:
             else:
                 msg.set_content(html_content, subtype='html')
 
-            email_clean = settings.EMAIL.strip()
-            password_clean = settings.EMAIL_PASSWORD.replace(" ", "").strip()
+            email_clean = settings.EMAIL.replace('"', '').replace("'", "").strip()
+            password_clean = settings.EMAIL_PASSWORD.replace('"', '').replace("'", "").replace(" ", "").strip()
+            msg['From'] = email_clean
+
 
             try:
                 with smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=10) as smtp:
