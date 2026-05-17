@@ -2,6 +2,14 @@ import { create } from 'zustand';
 import apiClient from '../api/axios';
 import { toast } from 'sonner';
 
+const cleanAvatarUrl = (user) => {
+  if (!user) return null;
+  if (user.avatar_url && user.avatar_url.includes('localhost:8000')) {
+    user.avatar_url = user.avatar_url.replace('http://localhost:8000', 'https://remindx-production.up.railway.app');
+  }
+  return user;
+};
+
 export const useStore = create((set, get) => ({
   // App settings
   theme: 'dark',
@@ -80,7 +88,7 @@ export const useStore = create((set, get) => ({
       const response = await apiClient.post('/auth/login', { email, password });
       const { access_token, user } = response.data.data;
       localStorage.setItem('auth_token', access_token);
-      set({ isAuthenticated: true, user, authLoading: false });
+      set({ isAuthenticated: true, user: cleanAvatarUrl(user), authLoading: false });
       toast.success('Logged in successfully!');
       get().fetchReminders();
       return true;
@@ -113,7 +121,7 @@ export const useStore = create((set, get) => ({
     if (!localStorage.getItem('auth_token')) return;
     try {
       const response = await apiClient.get('/auth/me');
-      set({ user: response.data.data, isAuthenticated: true });
+      set({ user: cleanAvatarUrl(response.data.data), isAuthenticated: true });
       get().fetchReminders();
     } catch (error) {
       get().logout();
@@ -128,7 +136,7 @@ export const useStore = create((set, get) => ({
         timezone: profileData.timezone
       };
       const response = await apiClient.put('/auth/profile', payload);
-      set({ user: response.data.data });
+      set({ user: cleanAvatarUrl(response.data.data) });
       toast.success('Profile updated successfully');
       return true;
     } catch (error) {
@@ -144,7 +152,7 @@ export const useStore = create((set, get) => ({
       const response = await apiClient.post('/auth/avatar', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      set({ user: response.data.data });
+      set({ user: cleanAvatarUrl(response.data.data) });
       toast.success('Profile picture updated successfully');
       return true;
     } catch (error) {
