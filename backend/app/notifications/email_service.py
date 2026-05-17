@@ -18,7 +18,7 @@ class EmailService:
         def _send():
             msg = EmailMessage()
             msg['Subject'] = subject
-            msg['From'] = settings.EMAIL
+            msg['From'] = settings.EMAIL.strip()
             msg['To'] = to_email
             
             # Set plain text fallback first, then HTML alternative E.g. standard MIME structure
@@ -28,15 +28,28 @@ class EmailService:
             else:
                 msg.set_content(html_content, subtype='html')
 
+            email_clean = settings.EMAIL.strip()
+            password_clean = settings.EMAIL_PASSWORD.replace(" ", "").strip()
+
             try:
-                with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-                    smtp.login(settings.EMAIL, settings.EMAIL_PASSWORD)
+                with smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=10) as smtp:
+                    smtp.login(email_clean, password_clean)
                     smtp.send_message(msg)
-                logger.info(f"Successfully dispatched HTML email to {to_email}")
+                logger.info(f"Successfully dispatched HTML email to {to_email} via SSL (465)")
                 return True
-            except Exception as e:
-                logger.error(f"SMTP dispatch failure for {to_email}: {str(e)}")
-                return False
+            except Exception as e_ssl:
+                logger.warning(f"SMTP SSL (465) failed: {str(e_ssl)}. E.g. attempting STARTTLS (587)...")
+                try:
+                    with smtplib.SMTP('smtp.gmail.com', 587, timeout=10) as smtp:
+                        smtp.ehlo()
+                        smtp.starttls()
+                        smtp.login(email_clean, password_clean)
+                        smtp.send_message(msg)
+                    logger.info(f"Successfully dispatched HTML email to {to_email} via STARTTLS (587)")
+                    return True
+                except Exception as e_tls:
+                    logger.error(f"SMTP STARTTLS (587) dispatch failure for {to_email}: {str(e_tls)}")
+                    return False
 
         try:
             return await asyncio.to_thread(_send)
